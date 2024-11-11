@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content%}
+<div
+  class="container row gap-2 align-content-center w-100 justify-content-start py-5"
+>
+  {% for item in meals %}
+  <div class="card col-4" style="width: 18rem">
+    <img src="{{ item.strMealThumb }}" class="card-img-top w-100" alt="image-alt" />
+    <div class="card-body">
+      <h5 class="card-title">{{ item.strMeal }}</h5>
+      <p class="card-text">{{ item.strDescription }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

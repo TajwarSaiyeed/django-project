@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %} Add Category {% endblock %}
+{% block content %}
+    {% load crispy_forms_tags %}
+    <h1>Add Category</h1>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %} {{ category_form|crispy }}
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+{% endblock %}

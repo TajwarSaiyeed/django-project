@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+    {% load crispy_forms_tags %}
+    <div class="container">
+        <h1>Signup</h1>
+        {% if messages %}
+            {% for m in messages %}
+                <div class="toast d-block" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+{#                        <img src="" class="rounded me-2" alt="...">#}
+                        <strong class="me-auto">
+                            Success
+                        </strong>
+                        <small>
+                            11 mins ago
+                        </small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        {{ m }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    <small>
+        Already have an account? <a href="{% url 'login' %}">Login</a>
+    </small>
+    </div>
+{% endblock %}

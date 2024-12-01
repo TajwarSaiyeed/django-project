@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Add Category -
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="mt-5">Add Category</h1>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <form method="post" class="my-5">
+            {% csrf_token %}
+            {% load crispy_forms_tags %}
+            {{ category_form|crispy }}
+            <button type="submit" class="btn btn-primary">Add Category</button>
+        </form>
+    </div>
+{% endblock %}

@@ -29,4 +29,40 @@
             </div>
         </div>
     </section>
+
+    <section class="featured-posts my-5">
+        <div class="container">
+            <h2 class="text-center">Featured Posts</h2>
+            <div class="row">
+                {% for post in featured_posts %}
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ post.title }}</h5>
+                                <p class="card-text">{{ post.content }}</p>
+                                <p class="card-text">Author: {{ post.author.username }}</p>
+                                <p> Category:
+                                    <small class="text-muted">
+                                        {% for category in post.category.all %}
+                                            {{ category.name }}
+                                        {% endfor %}
+                                    </small>
+                                </p>
+                            </div>
+                            {% if request.user.is_authenticated and request.user == post.author %}
+                            <div class="card-footer">
+                                <a href="{% url 'edit_post' post.id %}" class="btn btn-primary">
+                                    Edit
+                                </a>
+                                <a href="{% url 'delete_post' post.id %}" class="btn btn-danger">
+                                    Delete
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
 {% endblock %}

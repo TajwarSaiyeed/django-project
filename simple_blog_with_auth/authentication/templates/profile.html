@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% block title %}
-    Profile
+    {{ type }}
 {% endblock %}
 
 {% block content %}
@@ -14,9 +14,51 @@
             </div>
         {% endfor %}
     {% endif %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
+    {% if type == 'Profile' %}
+        <div class="d-flex gap-2">
+            <a href="{% url 'edit_profile' %}">
+                <span class="btn btn-outline-primary">Edit Profile</span>
+            </a>
+            <a href="{% url 'password_reset' %}">Change Password</a>
+        </div>
+        <h2 class="mt-5">My Posts</h2>
+
+        <div class="row">
+            {% for post in my_posts %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <p class="card-text">{{ post.content }}</p>
+                            <p class="card-text">Author: {{ post.author.username }}</p>
+                            <p> Category:
+                                <small class="text-muted">
+                                    {% for category in post.category.all %}
+                                        {{ category.name }}
+                                    {% endfor %}
+                                </small>
+                            </p>
+                        </div>
+                        {% if request.user.is_authenticated and request.user == post.author %}
+                            <div class="card-footer">
+                                <a href="{% url 'edit_post' post.id %}" class="btn btn-primary">
+                                    Edit
+                                </a>
+                                <a href="{% url 'delete_post' post.id %}" class="btn btn-danger">
+                                    Delete
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if type == 'Edit Profile' or type == 'Change Password' %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    {% endif %}
 {% endblock %}

@@ -1,10 +1,11 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from categories.forms import CategoryForm
 
+
+@login_required
 def add_category(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
     if request.method == 'POST':
         category_form = CategoryForm(request.POST)
         if category_form.is_valid():

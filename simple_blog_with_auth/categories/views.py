@@ -9,7 +9,9 @@ def add_category(request):
     if request.method == 'POST':
         category_form = CategoryForm(request.POST)
         if category_form.is_valid():
+            category_form.instance.slug = category_form.cleaned_data.get('name').replace(' ', '-').lower()
             category_form.save()
+            print(category_form.cleaned_data.get('slug'))
             messages.success(request, 'Category added successfully')
             return redirect('add_category')
     else:

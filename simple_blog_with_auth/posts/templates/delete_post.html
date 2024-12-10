@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Add Post -
+    Delete Post -
 {% endblock %}
 
 {% block content %}
     <div class="container">
-        <h1 class="mt-5">Add Post</h1>
+        <h1 class="mt-5">
+            Are you sure you want to delete "{{ post.title }}"?
+        </h1>
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -15,11 +17,13 @@
                 </div>
             {% endfor %}
         {% endif %}
-        <form method="post" class="my-5" enctype="multipart/form-data">
+        <form method="post" class="my-5">
             {% csrf_token %}
             {% load crispy_forms_tags %}
             {{ form|crispy }}
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-danger">
+                Delete
+            </button>
         </form>
     </div>
 {% endblock %}

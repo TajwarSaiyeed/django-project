@@ -1,8 +1,13 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.contrib import messages
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+
 from posts.forms import PostForm
 from posts.models import Post
+
+from django.views.generic import CreateView, UpdateView, DeleteView
 
 
 @login_required
@@ -17,8 +22,22 @@ def add_post(request):
     else:
         post_form = PostForm()
     return render(request, 'add-post.html', {
-        'post_form': post_form
+        'form': post_form
     })
+
+
+# add post using class based view
+@method_decorator(login_required, name='dispatch')
+class AddPostCreateView(CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'add-post.html'
+    success_url = reverse_lazy('add_post')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        messages.success(self.request, 'Post added successfully')
+        return super().form_valid(form)
 
 
 @login_required
@@ -36,8 +55,24 @@ def edit_post(request, post_id):
             return redirect('index')
 
     return render(request, 'add-post.html', {
-        'post_form': post_form
+        'form': post_form
     })
+
+
+# edit post using class based view
+@method_decorator(login_required, name='dispatch')
+class EditPostView(UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'add-post.html'
+    success_url = reverse_lazy('index')
+    pk_url_kwarg = 'post_id'
+
+    def form_valid(self, form):
+        if form.instance.author != self.request.user:
+            return redirect('index')
+        messages.success(self.request, 'Post updated successfully')
+        return super().form_valid(form)
 
 
 @login_required
@@ -48,3 +83,12 @@ def delete_post(request, post_id):
     post.delete()
     messages.success(request, 'Post deleted successfully')
     return redirect('index')
+
+
+# Delete post using class based view
+@method_decorator(login_required, name='dispatch')
+class DeletePostView(DeleteView):
+    model = Post
+    success_url = reverse_lazy('index')
+    pk_url_kwarg = 'post_id'
+    template_name = 'delete_post.html'

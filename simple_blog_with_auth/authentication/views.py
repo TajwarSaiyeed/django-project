@@ -3,9 +3,13 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, auth
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
+
 from posts.models import Post
 
 from authentication.forms import UserAuthenticationForm, UserUpdate, PasswordUpdate
+
+from django.contrib.auth.views import LoginView
 
 
 def sign_up(request):
@@ -20,6 +24,7 @@ def sign_up(request):
     else:
         form = UserAuthenticationForm()
     return render(request, 'sign-up.html', {'form': form})
+
 
 def log_in(request):
     if request.user.is_authenticated:
@@ -39,11 +44,27 @@ def log_in(request):
 
     return render(request, 'log-in.html', {'form': form})
 
+
+# Login View with class based view
+class UserLoginView(LoginView):
+    template_name = 'log-in.html'
+    form_class = AuthenticationForm
+    success_url = reverse_lazy('profile')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('profile')
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.info(self.request, f"You are now logged in as {form.cleaned_data.get('username')}")
+        return super().form_valid(form)
+
+
 @login_required
 def log_out(request):
     logout(request)
     return redirect('login')
-
 
 @login_required
 def edit_profile(request):
@@ -57,13 +78,15 @@ def edit_profile(request):
         form = UserUpdate(instance=request.user)
     return render(request, 'profile.html', {'form': form, 'type': 'Edit Profile'})
 
+
 @login_required
 def profile(request):
     my_posts = Post.objects.filter(author=request.user)
     return render(request, 'profile.html', {
         'my_posts': my_posts,
-        'type' : 'Profile'
+        'type': 'Profile'
     })
+
 
 @login_required
 def password_reset(request):

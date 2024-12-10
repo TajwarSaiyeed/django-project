@@ -9,6 +9,7 @@ class PostForm(forms.ModelForm):
             'title': 'Enter the title of the post',
             'content': 'Enter the content of the post',
             'category': 'Select the category of the post',
+            'image': 'Upload an image for the post',
         }
         error_messages = {
             'title': {
@@ -19,5 +20,8 @@ class PostForm(forms.ModelForm):
             },
             'category': {
                 'required': 'Please select the category of the post',
+            },
+            'image': {
+                'required': 'Please upload an image for the post',
             },
         }

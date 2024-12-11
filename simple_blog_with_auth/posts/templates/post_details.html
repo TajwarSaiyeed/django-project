@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ post.title }} -
+{% endblock %}
+
+{% block content %}
+    {% load crispy_forms_tags %}
+    <div class="container">
+        <h1 class="mt-5">{{ post.title }}</h1>
+        <p>Author: {{ post.author.username }}</p>
+        <p>Category:
+            <small class="text-muted">
+                {% for category in post.category.all %}
+                    {{ category.name }}
+                {% endfor %}
+            </small>
+        </p>
+        <img src="{{ post.image.url }}" class="img-fluid" alt="...">
+        <p>{{ post.content }}</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ comment_form|crispy }}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <h2>Comments</h2>
+        {% for comment in comments %}
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {{ comment.name }}
+                    </h5>
+                    <p class="card-text">{{ comment.body }}</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted text-right">{{ comment.created_on }}</small>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

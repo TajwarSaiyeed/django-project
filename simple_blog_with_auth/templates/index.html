@@ -51,7 +51,10 @@
                     <div class="col-md-4">
                         <div class="card mb-4">
                             <div class="card-body">
-                                <h5 class="card-title">{{ post.title }}</h5>
+                                <img src="{{ post.image.url }}" class="card-img-top" alt="...">
+                                <a href="{% url 'post_detail' post.id %}" class="text-decoration-none">
+                                    <h5 class="card-title">{{ post.title }}</h5>
+                                </a>
                                 <p class="card-text">{{ post.content }}</p>
                                 <p class="card-text">Author: {{ post.author.username }}</p>
                                 <p> Category:

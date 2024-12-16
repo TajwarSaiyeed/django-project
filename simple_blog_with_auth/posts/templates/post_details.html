@@ -19,11 +19,6 @@
         <img src="{{ post.image.url }}" class="img-fluid" alt="...">
         <p>{{ post.content }}</p>
 
-        <form method="POST">
-            {% csrf_token %}
-            {{ comment_form|crispy }}
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
 
         <h2>Comments</h2>
         {% for comment in comments %}
@@ -39,5 +34,12 @@
                 </div>
             </div>
         {% endfor %}
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ comment_form|crispy }}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
     </div>
 {% endblock %}

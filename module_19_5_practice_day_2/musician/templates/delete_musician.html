@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Delete Musician
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="mt-5">
+            Are you sure you want to delete {{ musician.first_name }} {{ musician.last_name }}?
+        </h1>
+        <form method="post" class="my-5">
+            {% csrf_token %}
+            {% load crispy_forms_tags %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-danger">
+                Delete
+            </button>
+        </form>
+    </div>
+{% endblock %}

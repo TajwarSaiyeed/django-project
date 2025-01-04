@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2 class="text-center">Sections</h2>
+        <hr>
+        <div class="d-flex justify-content-between mb-3">
+            <p class="lead">Below is the list of all sections.</p>
+            <a href="{% url 'section_create' %}" class="btn btn-primary">Add New Section</a>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Visitor Count</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for section in sections %}
+                <tr>
+                    <td>{{ section.name }}</td>
+                    <td>{{ section.description }}</td>
+                    <td>{{ section.visitor_count }}</td>
+                    <td>
+                        <a href="{% url 'section_detail' section.pk %}" class="btn btn-info">View</a>
+                        <a href="{% url 'section_edit' section.pk %}" class="btn btn-warning">Edit</a>
+                        <a href="{% url 'section_delete' section.pk %}" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

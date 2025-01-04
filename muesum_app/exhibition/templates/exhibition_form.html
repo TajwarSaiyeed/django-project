@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% load crispy_forms_tags %}
+    <div class="container mt-4">
+        <h2 class="text-center">{% if form.instance.pk %}Edit Exhibition{% else %}Add New Exhibition{% endif %}</h2>
+        <hr>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="d-flex justify-content-between mt-3">
+                <a href="{% url 'exhibition_list' %}" class="btn btn-secondary">Back to List</a>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

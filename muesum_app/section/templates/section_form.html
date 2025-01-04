@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% load crispy_forms_tags %}
+    <div class="container mt-4">
+        <h2 class="text-center">{% if section.pk %}Edit{% else %}Add{% endif %} Section</h2>
+        <hr>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-success">{% if section.pk %}Save Changes{% else %}Create Section{% endif %}</button>
+        </form>
+        <a href="{% url 'section_list' %}" class="btn btn-secondary mt-3">Cancel</a>
+    </div>
+{% endblock %}

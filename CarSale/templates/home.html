@@ -1,8 +1,54 @@
 {% extends 'base.html' %}
-
+{% load static %}
+{% block title %}Home{% endblock %}
 {% block content %}
-<div class="container">
-    <h1 class="mt-5">Welcome to Care Sale</h1>
-    <p class="lead">The best place to buy and sell cars.</p>
-</div>
+    <div class="container my-4">
+
+        <div class="mb-5 d-flex justify-content-between align-items-center">
+            <div class="text-center mb-5 w-50"> 
+                <h2 class="display-5 fw-bold">Welcome to CarMart</h2>
+                <p class="lead">Find your dream car with ease!</p>
+            </div>
+
+            <div class="mb-5 w-50">
+                <img src="{% static 'static_image.jpg' %}" alt="Static Car Image" class="img-fluid rounded shadow">
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <h2 class="mb-3">Filter by Brand</h2>
+                <li class="list-inline-item mb-2">
+                    <a href="{% url 'home' %}" 
+                       class="btn btn-outline-primary {% if not selected_brand %}active{% endif %}">
+                        All
+                    </a>
+                </li>
+                {% for brand in brands %}
+                    <li class="list-inline-item mb-2">
+                        <a href="{% url 'home' %}?brand={{ brand.name }}" 
+                           class="btn btn-outline-primary {% if selected_brand == brand.name %}active{% endif %}">
+                            {{ brand.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <p class="mt-3">Total Cars Found: <strong>{{ cars.count }}</strong></p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for car in cars %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ car.name }}</h5>
+                            <p class="card-text">Price: ${{ car.price }}</p>
+                            <p class="card-text">Brand: {{ car.car_brand.name }}</p>
+                            <a href="{% url 'car_detail' car.id %}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

@@ -7,7 +7,7 @@ class Car(models.Model):
     car_brand = models.ForeignKey(CarBrand, on_delete=models.CASCADE, related_name='cars')
     name = models.CharField(max_length=100)
     description = models.TextField()
-    image = models.ImageField(upload_to='cars/')
+    image = models.ImageField(upload_to='car/media/cars/')
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField()
 

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Car Details{% endblock %}
+
+{% block content %}
+
+{% load crispy_forms_tags %}
+
+<div class="row">
+            <div class="col-md-6">
+                <img src="{{ car.image.url }}" alt="{{ car.title }}" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-md-6">
+                <h1>{{ car.title }}</h1>
+                <p><strong>Description:</strong> {{ car.description }}</p>
+                <p><strong>Price:</strong> ${{ car.price }}</p>
+                <p><strong>Brand:</strong> {{ car.car_brand.name }}</p>
+                <p><strong>Quantity:</strong> 
+                    {% if car.quantity > 0 %}
+                        {{ car.quantity }}
+                    {% else %}
+                        <span class="text-danger">Out of Stock</span>
+                    {% endif %}
+                </p>
+
+                {% if user.is_authenticated %}
+                    {% if car.quantity > 0 %}
+                        <form method="post" action="{% url 'place_my_order' car.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Buy Now</button>
+                        </form>
+                    {% else %}
+                        <p class="text-danger">This car is currently out of stock.</p>
+                    {% endif %}
+                {% else %}
+                    <p><a href="{% url 'login' %}" class="btn btn-primary">Login</a> to buy this car.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <h2>Comments</h2>
+            <ul class="list-group mb-4">
+                {% for comment in comments %}
+                    <li class="list-group-item">
+                        <strong>{{ comment.name }}</strong> 
+                        <span class="text-muted">({{ comment.date_posted|date:"M d, Y H:i" }})</span>
+                        <p class="mb-0">{{ comment.comment }}</p>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item">No comments yet. Be the first to comment!</li>
+                {% endfor %}
+            </ul>
+
+            <h3>Add a Comment</h3>
+            <form method="post" class="mb-4">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary">Submit Comment</button>
+            </form>
+        </div>
+
+{% endblock %}

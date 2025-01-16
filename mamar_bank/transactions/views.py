@@ -6,15 +6,18 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.http import HttpResponse
 from django.views.generic import CreateView, ListView
-from .contants import DEPOSIT, WITHDRAWAL, LOAN, LOAN_PAID
+from accounts.models import UserBankAccount
+from .contants import DEPOSIT, WITHDRAWAL, LOAN, LOAN_PAID, TRANSFER
 from datetime import datetime
 from django.db.models import Sum
 from transactions.forms import (
     DepositForm,
     WithdrawForm,
-    LoanRequestForm,
+    LoanRequestForm, BalanceTransferForm,
 )
 from transactions.models import Transaction
+from django.core.mail import EmailMessage, EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 class TransactionCreateMixin(LoginRequiredMixin, CreateView):
     template_name = 'transactions /transaction_form.html'
@@ -55,6 +58,26 @@ class DepositMoneyView(TransactionCreateMixin):
                 'balance'
             ]
         )
+
+        mail_subject = 'Deposit Money'
+        message_body = render_to_string('transactions /deposit_email.html', {
+            'user': self.request.user,
+            'amount': amount,
+            'timestamp': timezone.now(),
+            'transaction_id' : Transaction.objects.latest('id').id
+        })
+
+        to_email = self.request.user.email
+
+        email = EmailMultiAlternatives(
+            mail_subject,
+            '',
+            '',
+            [to_email],
+        )
+        email.attach_alternative(message_body, "text/html")
+        email.send()
+
         messages.success(
             self.request,
             f'{"{:,.2f}".format(float(amount))}$ was deposited to your account successfully'
@@ -75,6 +98,29 @@ class WithdrawMoneyView(TransactionCreateMixin):
         amount = form.cleaned_data.get('amount')
         self.request.user.account.balance -= form.cleaned_data.get('amount')
         self.request.user.account.save(update_fields=['balance'])
+
+        # send the mail
+        mail_subject = 'Withdraw Money'
+        message_body = render_to_string('transactions /withdraw_email.html', {
+            'user': self.request.user,
+            'amount': amount,
+            'timestamp': timezone.now(),
+            'transaction_id' : Transaction.objects.latest('id').id
+        })
+
+        to_email = self.request.user.email
+
+
+        email = EmailMultiAlternatives(
+            mail_subject,
+            '',
+            '',
+            [to_email],
+        )
+
+        email.attach_alternative(message_body, "text/html")
+        email.send()
+
 
         messages.success(
             self.request,
@@ -141,7 +187,6 @@ class TransactionReportView(LoginRequiredMixin, ListView):
 class PayLoanView(LoginRequiredMixin, View):
     def get(self, request, loan_id):
         loan = get_object_or_404(Transaction, id=loan_id)
-        print(loan)
         if loan.loan_approve:
             user_account = loan.account
             if loan.amount < user_account.balance:
@@ -169,5 +214,58 @@ class LoanListView(LoginRequiredMixin,ListView):
     def get_queryset(self):
         user_account = self.request.user.account
         queryset = Transaction.objects.filter(account=user_account,transaction_type=3)
-        print(queryset)
         return queryset
+
+
+class BalanceTransferView(TransactionCreateMixin):
+    template_name = 'transactions /balance_transfer.html'
+    form_class = BalanceTransferForm
+    model = Transaction
+    title = 'Balance Transfer'
+    success_url = reverse_lazy('transaction_report')
+
+    def get_initial(self):
+        initial = {'transaction_type': TRANSFER}
+        return initial
+
+    def form_valid(self, form):
+        amount = form.cleaned_data.get('amount')
+        receiver_account_number = form.cleaned_data.get('receiver_account_number')
+
+        sender_account = self.request.user.account
+        try:
+            receiver_account = UserBankAccount.objects.get(account_no=receiver_account_number)
+        except UserBankAccount.DoesNotExist:
+            form.add_error('receiver_account_number', f'Account with account number {receiver_account_number} not found')
+            return self.form_invalid(form)
+
+        if sender_account == receiver_account:
+            form.add_error('receiver_account_number', 'You can not transfer money to your own account')
+            return self.form_invalid(form)
+
+        if sender_account.balance < amount:
+            form.add_error('amount', 'Insufficient balance in your account')
+            return self.form_invalid(form)
+
+
+        self.request.user.account.balance -= amount
+        receiver_account.balance += amount
+        self.request.user.account.save(update_fields=['balance'])
+        receiver_account.save(update_fields=['balance'])
+
+        Transaction.objects.create(
+            account=receiver_account,
+            amount=amount,
+            transaction_type=TRANSFER,
+            balance_after_transaction=receiver_account.balance,
+        )
+
+        messages.success(
+            self.request,
+            f'{"{:,.2f}".format(float(amount))}$ was transferred to account {receiver_account_number} successfully'
+        )
+
+        return super().form_valid(form)
+
+
+

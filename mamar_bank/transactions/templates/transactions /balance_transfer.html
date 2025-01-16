@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block head_title %}{{ title }}{% endblock %}
+{% block content %}
+    <div class="my-10 py-3 px-4 bg-white rounded-xl shadow-md">
+        <h1 class="font-bold text-3xl text-center pb-5 pt-2">Balance Transfer</h1>
+        <hr />
+        <form action="{% url 'balance_transfer' %}" method="post">
+            {% csrf_token %}
+            <div class="flex flex-col">
+                <label for="amount" class="text-lg font-bold">Amount</label>
+                <input
+                        type="number"
+                        name="amount"
+                        id="amount"
+                        class="border border-gray-400 p-2 rounded-lg"
+                        placeholder="Enter Amount"
+                />
+                {% if form.errors.amount %}
+                    <div class="text-red-500">{{ form.errors.amount }}</div>
+                {% endif %}
+            </div>
+            <div class="flex flex-col">
+                <label for="receiver_account_number" class="text-lg font-bold">Receiver</label>
+                <input
+                        type="number"
+                        name="receiver_account_number"
+                        id="receiver_account_number"
+                        class="border border-gray-400 p-2 rounded-lg"
+                        placeholder="Enter Receiver Account Number"
+                />
+                {% if form.errors.receiver_account_number %}
+                    <div class="text-red-500">{{ form.errors.receiver_account_number }}</div>
+                {% endif %}
+
+            </div>
+            <div class="flex flex-col">
+                <button
+                        type="submit"
+                        class="bg-blue-900 text-white font-bold p-2 rounded-lg mt-5"
+                >
+                    Transfer
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

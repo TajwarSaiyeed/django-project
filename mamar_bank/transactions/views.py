@@ -37,7 +37,7 @@ def send_transaction_email(user, amount,  mail_subject, template_name):
     return email
 
 class TransactionCreateMixin(LoginRequiredMixin, CreateView):
-    template_name = 'transactions /transaction_form.html'
+    template_name = 'transaction_form.html'
     model = Transaction
     title = ''
     success_url = reverse_lazy('transaction_report')
@@ -76,7 +76,7 @@ class DepositMoneyView(TransactionCreateMixin):
             ]
         )
 
-        send_transaction_email(self.request.user, amount, 'Deposit Money', 'transactions/deposit_email.html')
+        send_transaction_email(self.request.user, amount, 'Deposit Money', 'deposit_email.html')
 
         messages.success(
             self.request,
@@ -99,7 +99,7 @@ class WithdrawMoneyView(TransactionCreateMixin):
         self.request.user.account.balance -= form.cleaned_data.get('amount')
         self.request.user.account.save(update_fields=['balance'])
 
-        send_transaction_email(self.request.user, amount, 'Withdraw Money', 'transactions/withdraw_email.html')
+        send_transaction_email(self.request.user, amount, 'Withdraw Money', 'withdraw_email.html')
 
         messages.success(
             self.request,
@@ -124,7 +124,7 @@ class LoanRequestView(TransactionCreateMixin):
             return HttpResponse("You have cross the loan limits")
 
 
-        send_transaction_email(self.request.user, amount, 'Loan Request', 'transactions/loan_email.html')
+        send_transaction_email(self.request.user, amount, 'Loan Request', 'loan_email.html')
 
         messages.success(
             self.request,
@@ -134,7 +134,7 @@ class LoanRequestView(TransactionCreateMixin):
         return super().form_valid(form)
 
 class TransactionReportView(LoginRequiredMixin, ListView):
-    template_name = 'transactions/transaction_report.html'
+    template_name = 'transaction_report.html'
     model = Transaction
     balance = 0
 
@@ -191,7 +191,7 @@ class PayLoanView(LoginRequiredMixin, View):
 
 class LoanListView(LoginRequiredMixin,ListView):
     model = Transaction
-    template_name = 'transactions/loan_request.html'
+    template_name = 'loan_request.html'
     context_object_name = 'loans'
 
     def get_queryset(self):
@@ -201,7 +201,7 @@ class LoanListView(LoginRequiredMixin,ListView):
 
 
 class BalanceTransferView(TransactionCreateMixin):
-    template_name = 'transactions/balance_transfer.html'
+    template_name = 'balance_transfer.html'
     form_class = BalanceTransferForm
     model = Transaction
     title = 'Balance Transfer'
@@ -243,7 +243,7 @@ class BalanceTransferView(TransactionCreateMixin):
             balance_after_transaction=receiver_account.balance,
         )
 
-        sender_message_body = render_to_string('transactions/transaction_sender_email.html', {
+        sender_message_body = render_to_string('transaction_sender_email.html', {
             'sender_first_name': sender_account.user.first_name,
             'sender_last_name': sender_account.user.last_name,
             'receiver_first_name': receiver_account.user.first_name,
@@ -261,7 +261,7 @@ class BalanceTransferView(TransactionCreateMixin):
         sender_email.attach_alternative(sender_message_body, "text/html")
         sender_email.send()
 
-        receiver_message_body = render_to_string('transactions /transaction_receiver_email.html', {
+        receiver_message_body = render_to_string('transaction_receiver_email.html', {
             'sender_first_name': sender_account.user.first_name,
             'sender_last_name': sender_account.user.last_name,
             'receiver_first_name': receiver_account.user.first_name,

@@ -19,6 +19,24 @@ from transactions.models import Transaction
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template.loader import render_to_string
 
+def send_transaction_email(user, amount,  mail_subject, template_name):
+    message_body = render_to_string(template_name, {
+        'user': user,
+        'amount': amount,
+        'timestamp': timezone.now(),
+        'transaction_id' : Transaction.objects.latest('id').id
+    })
+
+    email = EmailMultiAlternatives(
+        mail_subject,
+        '',
+        '',
+        [user.email],
+    )
+    email.attach_alternative(message_body, "text/html")
+    email.send()
+    return email
+
 class TransactionCreateMixin(LoginRequiredMixin, CreateView):
     template_name = 'transactions /transaction_form.html'
     model = Transaction
@@ -59,24 +77,7 @@ class DepositMoneyView(TransactionCreateMixin):
             ]
         )
 
-        mail_subject = 'Deposit Money'
-        message_body = render_to_string('transactions /deposit_email.html', {
-            'user': self.request.user,
-            'amount': amount,
-            'timestamp': timezone.now(),
-            'transaction_id' : Transaction.objects.latest('id').id
-        })
-
-        to_email = self.request.user.email
-
-        email = EmailMultiAlternatives(
-            mail_subject,
-            '',
-            '',
-            [to_email],
-        )
-        email.attach_alternative(message_body, "text/html")
-        email.send()
+        send_transaction_email(self.request.user, amount, 'Deposit Money', 'transactions /deposit_email.html')
 
         messages.success(
             self.request,
@@ -99,28 +100,7 @@ class WithdrawMoneyView(TransactionCreateMixin):
         self.request.user.account.balance -= form.cleaned_data.get('amount')
         self.request.user.account.save(update_fields=['balance'])
 
-        # send the mail
-        mail_subject = 'Withdraw Money'
-        message_body = render_to_string('transactions /withdraw_email.html', {
-            'user': self.request.user,
-            'amount': amount,
-            'timestamp': timezone.now(),
-            'transaction_id' : Transaction.objects.latest('id').id
-        })
-
-        to_email = self.request.user.email
-
-
-        email = EmailMultiAlternatives(
-            mail_subject,
-            '',
-            '',
-            [to_email],
-        )
-
-        email.attach_alternative(message_body, "text/html")
-        email.send()
-
+        send_transaction_email(self.request.user, amount, 'Withdraw Money', 'transactions /withdraw_email.html')
 
         messages.success(
             self.request,
@@ -143,6 +123,10 @@ class LoanRequestView(TransactionCreateMixin):
             account=self.request.user.account,transaction_type=3,loan_approve=True).count()
         if current_loan_count >= 3:
             return HttpResponse("You have cross the loan limits")
+
+
+        send_transaction_email(self.request.user, amount, 'Loan Request', 'transactions /loan_email.html')
+
         messages.success(
             self.request,
             f'Loan request for {"{:,.2f}".format(float(amount))}$ submitted successfully'
@@ -259,6 +243,43 @@ class BalanceTransferView(TransactionCreateMixin):
             transaction_type=TRANSFER,
             balance_after_transaction=receiver_account.balance,
         )
+
+        sender_message_body = render_to_string('transactions /transaction_sender_email.html', {
+            'sender_first_name': sender_account.user.first_name,
+            'sender_last_name': sender_account.user.last_name,
+            'receiver_first_name': receiver_account.user.first_name,
+            'receiver_last_name': receiver_account.user.last_name,
+            'amount': amount,
+            'transaction_id': Transaction.objects.latest('id').id,
+            'timestamp': timezone.now()
+        })
+
+        sender_email = EmailMultiAlternatives(
+            'Transaction Sent Confirmation',
+            '',
+            '',
+            [sender_account.user.email]
+        )
+        sender_email.attach_alternative(sender_message_body, "text/html")
+        sender_email.send()
+
+        receiver_message_body = render_to_string('transactions /transaction_receiver_email.html', {
+            'sender_first_name': sender_account.user.first_name,
+            'sender_last_name': sender_account.user.last_name,
+            'receiver_first_name': receiver_account.user.first_name,
+            'receiver_last_name': receiver_account.user.last_name,
+            'amount': amount,
+            'transaction_id': Transaction.objects.latest('id').id,
+            'timestamp': timezone.now()
+        })
+        receiver_email = EmailMultiAlternatives(
+            'Transaction Received Confirmation',
+            '',
+            '',
+            [receiver_account.user.email]
+        )
+        receiver_email.attach_alternative(receiver_message_body, "text/html")
+        receiver_email.send()
 
         messages.success(
             self.request,

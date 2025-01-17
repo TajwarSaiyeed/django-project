@@ -1,4 +1,5 @@
 asgiref
+dj-database-url
 Django
 django-environ
 psycopg2

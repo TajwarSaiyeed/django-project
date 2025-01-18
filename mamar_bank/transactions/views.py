@@ -7,6 +7,7 @@ from django.views import View
 from django.http import HttpResponse
 from django.views.generic import CreateView, ListView
 from accounts.models import UserBankAccount
+from core.models import Bankrupt
 from .contants import DEPOSIT, WITHDRAWAL, LOAN, LOAN_PAID, TRANSFER
 from datetime import datetime
 from django.db.models import Sum
@@ -95,6 +96,15 @@ class WithdrawMoneyView(TransactionCreateMixin):
         return initial
 
     def form_valid(self, form):
+        bankrupt_status = Bankrupt.objects.first().is_bankrupt
+
+        if bankrupt_status:
+            messages.error(
+                self.request,
+                f'Bank is bankrupt, you can not withdraw money'
+            )
+            return redirect('transaction_report')
+
         amount = form.cleaned_data.get('amount')
         self.request.user.account.balance -= form.cleaned_data.get('amount')
         self.request.user.account.save(update_fields=['balance'])

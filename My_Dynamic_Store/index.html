@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dynamic Store</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>My Dynamic Store</h1>
+    </header>
+
+    <main class="container">
+        <div class="sidebar">
+            <h2>Categories</h2>
+            <ul id="category-list">
+                <li><a href="#" onclick="fetchProducts('all')" data-category="all">All Products</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <section id="product-list">
+            </section>
+        </div>
+    </main>
+
+
+    <footer>
+        <p>© 2025 My Dynamic Store</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

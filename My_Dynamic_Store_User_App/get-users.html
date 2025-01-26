@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Dynamic Store User App - Get All User</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 font-sans">
+    <nav class="bg-gray-800 text-white p-4">
+      <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-xl font-bold">My Dynamic Store User App - Get All User</h1>
+        <ul class="flex space-x-4">
+          <li>
+            <a href="index.html" class="hover:underline">Home</a>
+          </li>
+          <li>
+            <a href="get-users.html" class="hover:underline">Get All Users</a>
+          </li>
+          <li>
+            <a href="get-user.html" class="hover:underline">Get User by ID</a>
+          </li>
+          <li>
+            <a href="add-user.html" class="hover:underline">Add User</a>
+          </li>
+          <li>
+            <a href="login.html" class="hover:underline">Login</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container mx-auto p-4">
+      <h1 class="text-2xl font-bold mb-4">Get All Users</h1>
+      <button
+        id="getAllUsersBtn"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        Get Users
+      </button>
+      <div id="allUsersResult" class="mt-4"></div>
+    </div>
+    <script src="./js/fetchAllUsers.js"></script>
+  </body>
+</html>

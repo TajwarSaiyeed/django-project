@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Dynamic Store User App - Login</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 font-sans">
+    <nav class="bg-gray-800 text-white p-4">
+      <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-xl font-bold">My Dynamic Store User App - Login</h1>
+        <ul class="flex space-x-4">
+          <li>
+            <a href="index.html" class="hover:underline">Home</a>
+          </li>
+          <li>
+            <a href="get-users.html" class="hover:underline">Get All Users</a>
+          </li>
+          <li>
+            <a href="get-user.html" class="hover:underline">Get User by ID</a>
+          </li>
+          <li>
+            <a href="add-user.html" class="hover:underline">Add User</a>
+          </li>
+          <li>
+            <a href="login.html" class="hover:underline">Login</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container mx-auto p-4">
+      <h1 class="text-2xl font-bold mb-4">User Login</h1>
+      <form onsubmit="handleLogin(event)" class="space-y-2">
+        <input
+          type="text"
+          placeholder="Username"
+          class="border rounded p-2 w-full"
+          name="username"
+          value="mor_2314"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          class="border rounded p-2 w-full"
+          name="password"
+          value="83r5^_"
+          required
+        />
+        <button
+          type="submit"
+          class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Login
+        </button>
+      </form>
+      <pre
+        id="loginResult"
+        class="mt-4 w-full bg-gray-50 max-w-10 h-32 rounded-md overflow-x-auto"
+      ></pre>
+    </div>
+    <script src="./js/login.js"></script>
+  </body>
+</html>

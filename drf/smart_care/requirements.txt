@@ -1,0 +1,10 @@
+dj-database-url
+Django
+asgiref
+django-environ
+django-filter
+djangorestframework
+Markdown
+pillow
+sqlparse
+typing_extensions

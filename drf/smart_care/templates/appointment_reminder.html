@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Reminder</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-r from-blue-500 to-purple-600 text-gray-800 min-h-screen flex items-center justify-center">
+<div class="max-w-lg mx-auto p-8 bg-white shadow-2xl rounded-lg transform transition-transform hover:scale-105">
+    <p class="text-2xl font-bold">Dear {{ patient_name }},</p>
+
+    <p class="mt-6 text-lg">This is a reminder for your upcoming appointment with Dr. {{ doctor_name }}.</p>
+
+    <p class="mt-6 text-xl font-semibold">Appointment Details:</p>
+    <ul class="list-disc list-inside mt-4 space-y-2">
+        <li><strong>Doctor:</strong> Dr. {{ doctor_name }}</li>
+        <li><strong>Symptom:</strong> {{ symptom }}</li>
+        <li><strong>Time:</strong> {{ time }}</li>
+        <li><strong>Meet Link:</strong> <a href="{{ meet_link }}" class="text-blue-500 underline">{{ meet_link }}</a>
+        </li>
+    </ul>
+
+    <p class="mt-6 text-lg">Please make sure to be available at the scheduled time.</p>
+
+    <p class="mt-6 text-lg">Thank you,</p>
+    <p class="text-xl font-bold">Smart Care</p>
+</div>
+</body>
+</html>
